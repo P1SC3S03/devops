@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+    wordpress:
+        container_name: wordpress
+        image: wordpress
+        restart: always
+        environment:
+            WORDPRESS_DB_HOST: wordpress_db
+            WORDPRESS_DB_USER: exampleuser
+            WORDPRESS_DB_PASSWORD: examplepass
+            WORDPRESS_DB_NAME: exampledb
+        ports:
+            - 8081:80
+        volumes:
+            - wordpress:/var/www/html
+
+    wordpress_db:
+        container_name: wordpress_db
+        image: mysql:5.7
+        restart: always
+        environment:
+            MYSQL_DATABASE: exampledb
+            MYSQL_USER: exampleuser
+            MYSQL_PASSWORD: examplepass
+            MYSQL_RANDOM_ROOT_PASSWORD: "1"
+        volumes:
+            - wordpress_db:/var/lib/mysql
+
+    ghost:
+        container_name: ghost
+        image: ghost:4-alpine
+        restart: always
+        ports:
+            - 8082:2368
+        environment:
+            database__client: mysql
+            database__connection__host: ghost_db
+            database__connection__user: exampleuser
+            database__connection__password: examplepass
+            database__connection__database: ghost_db
+
+    ghost_db:
+        container_name: ghost_db
+        image: mysql:5.7
+        restart: always
+        environment:
+            MYSQL_DATABASE: ghost_db
+            MYSQL_USER: exampleuser
+            MYSQL_PASSWORD: examplepass
+            MYSQL_RANDOM_ROOT_PASSWORD: "1"
+        volumes:
+            - ghost_db:/var/lib/mysql
+
+volumes:
+    wordpress:
+    wordpress_db:
+    ghost_db:
